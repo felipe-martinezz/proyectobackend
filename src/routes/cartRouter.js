@@ -1,7 +1,7 @@
 import { Router } from "express";
-import context from "../contexts/cartContext.js"
+import context from "../contexts/FileSystem/cartContext.js"
 import __dirname from "../utils.js";
-import productContext from "../contexts/context.js"
+import productContext from "../contexts/FileSystem/context.js"
 
 let router = new Router();
 let contenedor = new context(__dirname + "/files/cart.json")
@@ -32,7 +32,7 @@ router.delete("/:id", async(req,res,next)=>{
     try {
         let idDelete = req.params.id;
         await contenedor.deleteCart(idDelete);
-        console.log("Carrito eliminado con exito");
+        console.log("carrito eliminado con exito");
     } catch (error) {
      console.log(error)   
     }

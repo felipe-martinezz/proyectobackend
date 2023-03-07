@@ -21,17 +21,18 @@ class contenedor{
     }
 
     //Agregar productos
-    save = async(producto) =>{
-        let stock = await this.getAll();
+    save = async({title,price,thumbnail,stock}) =>{
+        let allProducts = await this.getAll();
+        let newProduct = {title,price,thumbnail,stock}
         try {
-            if(stock.length === 0){
+            if(allProducts.length === 0){
                 producto.id = 0;
-                stock.push(producto)
-                await fs.promises.writeFile(this.path, JSON.stringify(stock,null,'\t'))
+                allProducts.push(newProduct)
+                await fs.promises.writeFile(this.path, JSON.stringify(allProducts,null,'\t'))
             }else{
-                producto.id = stock[stock.length-1].id+1
-                stock.push(producto)
-                await fs.promises.writeFile(this.path,JSON.stringify(stock,null,'\t'))
+                producto.id = allProducts[allProducts.length-1].id+1
+                allProducts.push(newProduct)
+                await fs.promises.writeFile(this.path,JSON.stringify(allProducts,null,'\t'))
             }
         } catch (error) {
             console.log(error)
@@ -49,7 +50,7 @@ class contenedor{
         }
     }
 
-    //Borrar por id
+    //borrar por id
     deleteById = async(number) =>{
         let stock = await this.getAll();
         try {
@@ -70,8 +71,9 @@ class contenedor{
     }
 
     //Actualizar producto
-    update = async(objeto) =>{
+    update = async({id, objeto}) =>{
         let productos = await this.getAll();
+        objeto.id = id
         productos.map(function(item){
             if(item.id == objeto.id){
                 item.title = objeto.title,

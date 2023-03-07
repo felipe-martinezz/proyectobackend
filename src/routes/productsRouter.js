@@ -1,9 +1,12 @@
 import { Router } from "express";
-import context from "../contexts/context.js"
+import context from "../contexts/MongoDB/context.js"
 import __dirname from "../utils.js"
 
 let router = new Router();
-let contenedor = new context(__dirname + "/files/productos.json")
+//Este es para fs
+//let contenedor = new context(__dirname + "/files/productos.json")
+let contenedor = new context()
+let DB  = "mongoAtlas"
 
 //Traer todos los productos
 router.get("/",async(req,res,next)=>{
@@ -31,16 +34,9 @@ router.post("/", async(req,res,next)=>{
     try {
         let {title,price,thumbnail,stock} = req.body
         if(!title||!price||!thumbnail||!stock){
-            console.log("Faltan valores");
+            console.log("faltan valores");
         }else{
-            let newProduct = {
-                title,
-                price,
-                thumbnail,
-                stock
-            };
-            await contenedor.save(newProduct);
-            console.log(`${newProduct.id}`);
+            await contenedor.save({title:title, price:price, thumbnail:thumbnail, stock:stock});
             res.redirect('/products')
         }
     } catch (error) {
@@ -52,18 +48,18 @@ router.post("/", async(req,res,next)=>{
 router.put("/:id", async(req,res,next)=>{
     try {
         let id = req.params.id;
-        let {title,price,thumbnail} = req.body
-        if(!title || !price || !thumbnail){
-            res.send("Faltan datos")
+        let {title,price,thumbnail,stock} = req.body
+        if(!title || !price || !thumbnail || !stock){
+            res.send("faltan datos")
         }else{
             let updateProduct ={
-                id,
                 title,
                 price,
-                thumbnail
+                thumbnail,
+                stock
             };
-            await contenedor.update(updateProduct)
-            res.send(`Se actualizo el producto ${updateProduct.title}`)
+            await contenedor.update({id,updateProduct})
+            res.send(`se actualizo el producto ${updateProduct.title}`)
         }
     } catch (error) {
         console.log(error)
@@ -75,8 +71,7 @@ router.delete("/:id", async(req,res,next)=>{
     try {
         let id = req.params.id;
         await contenedor.deleteById(id);
-        console.log("Producto borrado con exito")
-        res.send(`Producto con el Id ${id} fue borrado con exito`)
+        res.send(`producto con el Id ${id} fue borrado con exito`)
     } catch (error) {
         console.log(error)
     }
